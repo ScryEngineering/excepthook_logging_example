@@ -1,5 +1,8 @@
 import sys
 import logging
+import threading
+
+from threaded_exception import RunsInAThread
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='example.log', filemode='w', level=logging.DEBUG)
@@ -22,4 +25,9 @@ except ValueError:
     logger.info("Caught the exception")
 
 
-raise Exception("We haven't got code to catch this!")
+# Test that the logger get exception raised from thread
+foo = RunsInAThread("Runs on thread")
+thread = threading.Thread(target=foo.run, args=())
+thread.daemon = True
+thread.start()
+thread.join()
