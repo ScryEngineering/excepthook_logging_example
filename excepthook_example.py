@@ -24,7 +24,7 @@ sys.excepthook = handle_unhandled_exception
 
 
 def patch_threading_excepthook():
-    """Installs our exception handler into the threading
+    """Installs our exception handler into the threading modules Thread object
     Inspired by https://bugs.python.org/issue1230540
     """
     old_init = threading.Thread.__init__
