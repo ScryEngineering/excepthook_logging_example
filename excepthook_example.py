@@ -18,6 +18,23 @@ def handle_unhandled_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_unhandled_exception
 
 
+def patch_threading_excepthook():
+    """Installs our exception handler into the threading"""
+    old_init = threading.Thread.__init__
+    def new_init(self, *args, **kwargs):
+        old_init(self, *args, **kwargs)
+        old_run = self.run
+        def run_with_our_excepthook(*args, **kwargs):
+            try:
+                old_run(*args, **kwargs)
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                sys.excepthook(*sys.exc_info())
+        self.run = run_with_our_excepthook
+    threading.Thread.__init__ = new_init
+
+patch_threading_excepthook()
 
 try:
     raise ValueError("we catch this one")
